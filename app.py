@@ -49,12 +49,38 @@ with st.sidebar:
     st.caption(f"v{__version__}")
     st.divider()
 
-    # Main navigation
-    page = st.radio(
-        L["sidebar_mode"],
-        [L["sidebar_build"], L["sidebar_audit"], "📊 Compare", "📁 History", "📈 Analytics"],
-        index=0,
-    )
+    # Status indicator
+    if "app_started" not in st.session_state:
+        st.session_state.app_started = False
+
+    if not st.session_state.app_started:
+        if st.button("🚀 Start Pitch Master", type="primary", use_container_width=True):
+            st.session_state.app_started = True
+            st.rerun()
+        st.warning("App not started. Click the button above.")
+    else:
+        st.success("✅ App running")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("⏹ Stop", use_container_width=True):
+                st.session_state.app_started = False
+                st.rerun()
+        with col2:
+            if st.button("🔄 Restart", use_container_width=True):
+                st.session_state.app_started = False
+                st.rerun()
+
+    st.divider()
+
+    # Main navigation (only if started)
+    if st.session_state.app_started:
+        page = st.radio(
+            L["sidebar_mode"],
+            [L["sidebar_build"], L["sidebar_audit"], "📊 Compare", "📁 History", "📈 Analytics"],
+            index=0,
+        )
+    else:
+        page = None
 
     st.divider()
     st.markdown(f"**{L['sidebar_provider']}:** `{LLM_PROVIDER}`")
@@ -63,8 +89,42 @@ with st.sidebar:
     st.markdown(L["sidebar_disclaimer"])
 
 
+# --- WELCOME SCREEN ---
+if not st.session_state.app_started:
+    st.title("🎯 Pitch Master")
+    st.markdown("---")
+    st.subheader("Welcome to Pitch Master")
+    st.markdown("""
+    Open-source fundraising copilot for founders and investors.
+
+    **Features:**
+    - 🏗️ **Build Mode** — Generate pitch decks from questionnaires
+    - 🔍 **Audit Mode** — Analyze PDF pitch decks with PEF-100
+    - 📊 **Compare** — Side-by-side deck comparison
+    - 📁 **History** — Save and manage past pitches
+    - 📈 **Analytics** — PEF-100 trends and insights
+
+    **Getting Started:**
+    1. Click **🚀 Start Pitch Master** in the sidebar
+    2. Select your mode (Build / Audit)
+    3. Start creating!
+
+    **Quick Start:**
+    ```bash
+    # Windows
+    start.bat
+
+    # Or manually
+    pip install -r requirements.txt
+    streamlit run app.py
+    ```
+    """)
+    st.markdown("---")
+    st.caption("v" + __version__ + " | MIT License | Open Source")
+
+
 # --- BUILD MODE ---
-if page == L["sidebar_build"]:
+elif page == L["sidebar_build"]:
     st.title(L["title_build"])
     st.subheader(L["build_header"])
 
