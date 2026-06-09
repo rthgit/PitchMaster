@@ -1,0 +1,15 @@
+.venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+outputs/*.pdf
+outputs/*.docx
+outputs/*.md
+outputs/*.txt
+!outputs/.gitkeep
+.idea/
+.vscode/
+*.egg-info/
+dist/
+build/
